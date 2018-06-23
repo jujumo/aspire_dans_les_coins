@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as bs
 from urllib.parse import urlparse
 from ads.ads import SaleEstate
 from datetime import datetime
-from .ParsingAll import ParseResult
+from .ParserCollection import ParseResult
 from os.path import splitext
 
 

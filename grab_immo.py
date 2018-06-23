@@ -4,7 +4,7 @@ import logging
 import argparse
 import ads
 from ads.net import get_page_tree, is_url
-from ads.parsing import ParserCollection, ParseResult
+from ads.parsing.ParserCollection import ParserCollection, ParseResult
 import pandas as pd
 import os.path
 
