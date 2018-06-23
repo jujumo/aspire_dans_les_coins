@@ -3,15 +3,17 @@ __author__ = 'jumo'
 import logging
 from urllib.request import urlopen
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup as bs
 
 
-def get_page_content(url):
+def get_page_tree(url):
     logging.debug('requesting {}'.format(url))
     response = urlopen(url)
     mybytes = response.read()
     page_content = mybytes.decode("latin-1")
     response.close()
-    return page_content
+    root_page = bs(page_content, 'html5lib')
+    return root_page
 
 
 def is_url(path):
@@ -37,3 +39,4 @@ def grab_offer_list(url_list, offers_parser):
         offer = offers_parser(page_content, url)
         offers.append(offer)
     return offers
+

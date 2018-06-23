@@ -5,14 +5,14 @@ class Offer(object):
     @staticmethod
     def properties_required():
         """ defines the list of optional attributes """
-        return ['url']
+        return []
 
     @staticmethod
     def properties_optional():
         """ defines the list of optional attributes """
         return []
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         for p in self.properties_required():
             if p not in kwargs:
                 print(kwargs)
@@ -57,10 +57,3 @@ class SaleEstate(Sale):
             'rooms',
             'real_estate']
 
-
-class OffersList:
-    def __init__(self, url, url_list=[], next_url=None):
-        self.url = url
-        assert(type(url_list) == list)
-        self.url_list = url_list
-        self.next_url = next_url
