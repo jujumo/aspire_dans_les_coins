@@ -135,27 +135,38 @@ class ParsingLeboncoinAdEstate(ParseResult):
 
         # date creation
         date_tree = root_page.find('div', data_signature['date'])
+        if not date_tree:
+            return result
         date = date_tree.contents[0]  # = '13/06/2018 à 17h01'
         info['date_creation'] = date.split()[0]
 
         # price
         price_tree = root_page.find('div', data_signature['price'])
+        if not price_tree:
+            return result
         price = (price_tree.contents[0].contents[0].contents[1])
         info['price'] = int(price.replace(" ", ""))
 
         # localization
         location_tree = root_page.find('div', data_signature['location'])
+        if not location_tree:
+            return result
         info['location'] = location_tree.contents[0].contents[1]
         # zip
         info['zip'] = int(location_tree.contents[0].contents[7])
 
         # category
         category_tree = root_page.find('div', data_signature['category'])
-        category = category_tree.contents[0].contents[1].contents[0]
-        info['category'] = category.lower()
+        if location_tree:
+            category = category_tree.contents[0].contents[1].contents[0]
+            info['category'] = category.lower()
+        else:
+            info['category'] = 'estate'
 
         # surface
         surface_tree = root_page.find('div', data_signature['surface'])
+        if not surface_tree:
+            return result
         surface = surface_tree.contents[0].contents[1].contents[0]
         info['surface'] = int(surface.split(' ')[0])
 
