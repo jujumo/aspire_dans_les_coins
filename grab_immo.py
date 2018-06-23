@@ -3,7 +3,7 @@ __author__ = 'jumo'
 import logging
 import argparse
 import ads
-from ads.net.get import get_page_tree
+from ads.net import get_page_tree, is_url
 from ads.parsing import ParserCollection, ParseResult
 import pandas as pd
 import os.path
@@ -28,7 +28,16 @@ def grab():
         # collect all offers urls
         logging.info('collecting ads')
         parsed = ParseResult()
-        parsed.urls.update(set([args.input]))
+
+        if is_url(args.input):
+            # a single url
+            parsed.add_url(args.input)
+        elif os.path.exists(args.input):
+            # its a file
+            with open(args.input) as f:
+                urls = set(f.readlines())
+                parsed.add_url(urls)
+
         while parsed.urls:
             source_url = parsed.urls.pop()
             root_page = get_page_tree(source_url)
