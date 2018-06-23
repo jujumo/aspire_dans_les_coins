@@ -111,7 +111,7 @@ class ParsingLeboncoinAdEstate(ParseResult):
     def url_match(cls, source_url):
         url = urlparse(source_url)
         is_leboncoin = bool(url.netloc == 'www.leboncoin.fr')
-        is_digit = (splitext(url.path.split('/')[-1])[0]).isdigit()
+        is_digit = (splitext(url.path.split('/')[2])[0]).isdigit()
         is_estate = (url.path.split('/')[1]) == 'ventes_immobilieres'
         return is_leboncoin and is_digit and is_estate
 
@@ -151,9 +151,15 @@ class ParsingLeboncoinAdEstate(ParseResult):
         location_tree = root_page.find('div', data_signature['location'])
         if not location_tree:
             return result
-        info['location'] = location_tree.contents[0].contents[1]
+        currated_location_fields = (l.strip() for l in location_tree.contents[0].contents)
+        currated_location_fields = [l for l in currated_location_fields if l and 'react-text' not in l]
+        if currated_location_fields:
+            info['location'] = currated_location_fields[0]
         # zip
-        info['zip'] = int(location_tree.contents[0].contents[7])
+        if len(currated_location_fields) == 1:
+            info['zip'] = int(currated_location_fields[0])
+        else:
+            info['zip'] = int(currated_location_fields[1])
 
         # category
         category_tree = root_page.find('div', data_signature['category'])
