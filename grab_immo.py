@@ -39,7 +39,9 @@ def grab():
             table = pd.read_csv(args.output, sep=CSV_SEP)
             table = table.set_index('url')
         else:
-            table = pd.DataFrame(columns=ads.ads.SaleEstate.properties_required() + ads.ads.SaleEstate.properties_optional() + ['url'])
+            table = pd.DataFrame(columns=ads.ads.SaleEstate.properties_required()
+                                         + ads.ads.SaleEstate.properties_optional()
+                                         + ['url'])
             table = table.set_index('url')
 
         # and the look for ads details

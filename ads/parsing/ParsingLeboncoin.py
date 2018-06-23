@@ -24,62 +24,6 @@ data_signature = {
 }
 
 
-def parse_page_to_dict(page_root, url):
-    info = {'url': url}
-    # title
-    title_tree = page_root.find('div', data_signature['title'])
-    info['title'] = title_tree.contents[0].contents[0].contents[0]
-
-    # date of grabbing (now)
-    info['date_grabbed'] = datetime.now()
-
-    # date creation
-    date_tree = page_root.find('div', data_signature['date'])
-    date = date_tree.contents[0]  # = '13/06/2018 à 17h01'
-    info['date_creation'] = date.split()[0]
-
-    # price
-    price_tree = page_root.find('div', data_signature['price'])
-    price = (price_tree.contents[0].contents[0].contents[1])
-    info['price'] = int(price.replace(" ", ""))
-
-    # localization
-    location_tree = page_root.find('div', data_signature['location'])
-    info['location'] = location_tree.contents[0].contents[1]
-    # zip
-    info['zip'] = int(location_tree.contents[0].contents[7])
-
-    return info
-
-
-def parse_page_estate_to_dict(page_root, url):
-    # retreive generic infos
-    info = parse_page_to_dict(page_root, url)
-
-    # category
-    category_tree = page_root.find('div', data_signature['category'])
-    category = category_tree.contents[0].contents[1].contents[0]
-    info['category'] = category.lower()
-
-    # surface
-    surface_tree = page_root.find('div', data_signature['surface'])
-    surface = surface_tree.contents[0].contents[1].contents[0]
-    info['surface'] = int(surface.split(' ')[0])
-
-    # rooms
-    rooms_tree = page_root.find('div', data_signature['rooms'])
-    if rooms_tree:
-        rooms = rooms_tree.contents[0].contents[1].contents[0]
-        info['rooms'] = int(rooms)
-
-    # real estate
-    real_estate_tree = page_root.find('span', data_signature['real_estate'])
-    if real_estate_tree:
-        info['real_estate'] = real_estate_tree.contents[0]
-
-    return info
-
-
 class ParsingLeboncoinList(ParseResult):
     @classmethod
     def url_match(cls, source_url):
@@ -114,52 +58,52 @@ class ParsingLeboncoinList(ParseResult):
 
         return result
 
-
-class ParsingLeboncoinAd(ParseResult):
-    @classmethod
-    def url_match(cls, source_url):
-        url = urlparse(source_url)
-        is_leboncoin = bool(url.netloc == 'www.leboncoin.fr')
-        is_digit = (splitext(url.path.split('/')[-1])[0]).isdigit()
-        return False
-        return is_leboncoin and is_digit
-
-    @classmethod
-    def parse(cls, root_page, source_url):
-        result = ParseResult()
-        return result
-        # need to fail fast
-        if not cls.url_match(source_url):
-            return result
-
-        info = {}
-        # title
-        title_tree = root_page.find('div', data_signature['title'])
-        info['title'] = title_tree.contents[0].contents[0].contents[0]
-
-        # date of grabbing (now)
-        info['date_grabbed'] = datetime.now()
-
-        # date creation
-        date_tree = root_page.find('div', data_signature['date'])
-        date = date_tree.contents[0]  # = '13/06/2018 à 17h01'
-        info['date_creation'] = date.split()[0]
-
-        # price
-        price_tree = root_page.find('div', data_signature['price'])
-        price = (price_tree.contents[0].contents[0].contents[1])
-        info['price'] = int(price.replace(" ", ""))
-
-        # localization
-        location_tree = root_page.find('div', data_signature['location'])
-        info['location'] = location_tree.contents[0].contents[1]
-        # zip
-        info['zip'] = int(location_tree.contents[0].contents[7])
-
-        # sale = SaleEstate(**info)
-        # result.ads[source_url] = sale
-
-        return result
+# TODO:
+# class ParsingLeboncoinAd(ParseResult):
+#     @classmethod
+#     def url_match(cls, source_url):
+#         url = urlparse(source_url)
+#         is_leboncoin = bool(url.netloc == 'www.leboncoin.fr')
+#         is_digit = (splitext(url.path.split('/')[-1])[0]).isdigit()
+#         return False
+#         return is_leboncoin and is_digit
+#
+#     @classmethod
+#     def parse(cls, root_page, source_url):
+#         result = ParseResult()
+#         return result
+#         # need to fail fast
+#         if not cls.url_match(source_url):
+#             return result
+#
+#         info = {}
+#         # title
+#         title_tree = root_page.find('div', data_signature['title'])
+#         info['title'] = title_tree.contents[0].contents[0].contents[0]
+#
+#         # date of grabbing (now)
+#         info['date_grabbed'] = datetime.now()
+#
+#         # date creation
+#         date_tree = root_page.find('div', data_signature['date'])
+#         date = date_tree.contents[0]  # = '13/06/2018 à 17h01'
+#         info['date_creation'] = date.split()[0]
+#
+#         # price
+#         price_tree = root_page.find('div', data_signature['price'])
+#         price = (price_tree.contents[0].contents[0].contents[1])
+#         info['price'] = int(price.replace(" ", ""))
+#
+#         # localization
+#         location_tree = root_page.find('div', data_signature['location'])
+#         info['location'] = location_tree.contents[0].contents[1]
+#         # zip
+#         info['zip'] = int(location_tree.contents[0].contents[7])
+#
+#         # sale = SaleEstate(**info)
+#         # result.ads[source_url] = sale
+#
+#         return result
 
 
 class ParsingLeboncoinAdEstate(ParseResult):
@@ -178,7 +122,8 @@ class ParsingLeboncoinAdEstate(ParseResult):
         if not cls.url_match(source_url):
             return result
 
-        info = {}
+        info = dict()
+
         # title
         title_tree = root_page.find('div', data_signature['title'])
         if not title_tree:
