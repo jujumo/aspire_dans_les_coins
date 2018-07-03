@@ -1,54 +1,70 @@
 import unittest
-import net.parser_leboncoin as lbc
+import ads.parsing.ParsingLeboncoin as lbc
+from ads.net import get_page_tree
+
+
+class TestParserLeboncoinList(unittest.TestCase):
+    def test_parse_page_list_url(self):
+        fake_url = 'https://www.leboncoin.fr/recherche/?category=9&region=22&cities=38420&real_estate_type=1&square=130-max&rooms=4-max&price=min-600000'
+        result = lbc.ParsingLeboncoinList.url_match(fake_url)
+        self.assertEqual(result, True)
+
+    def test_parse_page_list_single(self):
+        fake_url = 'https://www.leboncoin.fr/recherche/?category=9&region=22&cities=38420&real_estate_type=1&square=130-max&rooms=4-max&price=min-600000'
+        fake_filepath = 'sample_annonce_list_nopage.html'
+        root_page = get_page_tree(fake_filepath)
+
+        result = lbc.ParsingLeboncoinList.parse(root_page, fake_url)
+        urls = sorted(result.urls)
+
+        self.assertEqual(19, len(urls))
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1321296674.htm/', urls[0])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1455670832.htm/', urls[-1])
+
+    def test_parse_page_list_pages(self):
+        fake_url = 'https://www.leboncoin.fr/recherche/?category=9&region=22&cities=Grenoble_38000'
+        fake_filepath = 'sample_annonce_list_pagination.html'
+        root_page = get_page_tree(fake_filepath)
+
+        result = lbc.ParsingLeboncoinList.parse(root_page, fake_url)
+        urls = sorted(result.urls)
+
+        self.assertEqual(36, len(urls))
+        self.assertEqual('https://www.leboncoin.fr/recherche/?category=9&region=22&cities=Grenoble_38000&page=2', urls[0])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1130030581.htm/', urls[1])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1457365725.htm/', urls[-1])
+
+    def test_parse_page_list_last(self):
+        fake_url = 'https://www.leboncoin.fr/recherche/?category=9&region=22&cities=38190&page=8'
+        fake_filepath = 'sample_annonce_list_last.html'
+        root_page = get_page_tree(fake_filepath)
+
+        result = lbc.ParsingLeboncoinList.parse(root_page, fake_url)
+        urls = sorted(result.urls)
+
+        self.assertEqual(25, len(urls))
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1071666198.htm/', urls[0])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1433979227.htm/', urls[-1])
 
 
 class TestParserLeboncoin(unittest.TestCase):
     def test_parse_page_info(self):
-        url = 'sample_annonce_estate.html'
-        with open(url, 'r', encoding='utf-8') as html_file:
-            content = html_file.read()
-        page = lbc.parse_page_estate(content, url)
-        self.assertEqual(page.url, url)
-        self.assertEqual(page.date_creation, '13/06/2018')
-        self.assertEqual(page.price, 479000)
-        self.assertEqual(page.category, 'maison')
-        self.assertEqual(page.surface, 158)
-        self.assertEqual(page.rooms, 6)
-        self.assertEqual(page.location, 'Le Versoud')
-        self.assertEqual(page.real_estate, 'Barral Immobilier')
+        fake_url = 'https://www.leboncoin.fr/ventes_immobilieres/1415286514.htm/'
+        fake_filepath = 'sample_annonce_estate.html'
+        root_page = get_page_tree(fake_filepath)
+        result = lbc.ParsingLeboncoinAdEstate.parse(root_page, fake_url)
 
-    def test_parse_page_list_single(self):
-        url = 'sample_annonce_list_nopage.html'
-        with open(url, 'r', encoding='utf-8') as html_file:
-            content = html_file.read()
-        page = lbc.parse_page_list(content, url)
-
-        self.assertEqual(len(page.url_list), 20)
-        self.assertEqual(page.url_list[ 0], 'https://www.leboncoin.fr/ventes_immobilieres/1427600032.htm?ca=22_s')
-        self.assertEqual(page.url_list[19], 'https://www.leboncoin.fr/ventes_immobilieres/1395426763.htm?ca=22_s')
-        self.assertEqual(page.next_url, None)
-
-    def test_parse_page_list_pages(self):
-        url = 'sample_annonce_list_pagination.html'
-        with open(url, 'r', encoding='utf-8', errors='replace') as html_file:
-            content = html_file.read()
-        page = lbc.parse_page_list(content, url)
-
-        self.assertEqual(len(page.url_list), 35)
-        self.assertEqual(page.url_list[ 0], 'https://www.leboncoin.fr/ventes_immobilieres/1449762236.htm?ca=22_s')
-        self.assertEqual(page.url_list[34], 'https://www.leboncoin.fr/ventes_immobilieres/1403357400.htm?ca=22_s')
-        self.assertEqual(page.next_url, 'https://www.leboncoin.fr/ventes_immobilieres/offres/rhone_alpes/?o=2&sqs=0&location=Montbonnot-Saint-Martin%2038330')
-
-    def test_parse_page_list_last(self):
-        url = 'sample_annonce_list_last.html'
-        with open(url, 'r', encoding='utf-8', errors='replace') as html_file:
-            content = html_file.read()
-        page = lbc.parse_page_list(content, url)
-
-        self.assertEqual(len(page.url_list), 13)
-        self.assertEqual(page.url_list[ 0], 'https://www.leboncoin.fr/ventes_immobilieres/1419046932.htm?ca=22_s')
-        self.assertEqual(page.url_list[12], 'https://www.leboncoin.fr/ventes_immobilieres/1421855109.htm?ca=22_s')
-        self.assertEqual(page.next_url, None)
+        self.assertEqual(0, len(result.urls))
+        self.assertEqual(1, len(result.ads))
+        for url, ad in result.ads.items(): pass
+        self.assertEqual(fake_url, url)
+        self.assertEqual('01/06/2018', ad.date_creation)
+        self.assertEqual(495000, ad.price)
+        self.assertEqual('maison', ad.category)
+        self.assertEqual(149, ad.surface)
+        self.assertEqual(7, ad.rooms)
+        self.assertEqual('Le Versoud', ad.location)
+        self.assertEqual('CHRISTIAN JOUTY IMMOBILIER', ad.real_estate)
 
 
 if __name__ == '__main__':
