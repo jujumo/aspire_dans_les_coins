@@ -1,6 +1,6 @@
 __author__ = 'jumo'
 
-from bs4 import BeautifulSoup as bs
+
 from urllib.parse import urlparse
 from ads.ads import SaleEstate
 from datetime import datetime
@@ -8,11 +8,17 @@ from .ParserCollection import ParseResult
 from os.path import splitext
 
 
-def nice_url(url):
-    return 'https:' + url if url.startswith('//') else url
+def nice_url(_url):
+    url = urlparse(_url)
+    if not url.netloc:
+        # relative path -> make it absolute
+        url = url._replace(scheme='https', netloc='www.leboncoin.fr')
+    return url.geturl()
 
 
 data_signature = {
+    'list_panel': ['div', {'role': 'tabpanel'}],
+    'list_next': ['div', {'role': 'tabpanel'}],
     'title': {'data-qa-id': "adview_title"},
     'price': {'data-qa-id': 'adview_price'},
     'date': {'data-qa-id': 'adview_date'},
@@ -29,8 +35,8 @@ class ParsingLeboncoinList(ParseResult):
     def url_match(cls, source_url):
         url = urlparse(source_url)
         is_leboncoin = bool(url.netloc == 'www.leboncoin.fr')
-        is_offer = 'offres' in url.path.split('/')
-        return is_leboncoin and is_offer
+        is_list = 'recherche' in url.path.split('/')
+        return is_leboncoin and is_list
 
     @classmethod
     def parse(cls, root_page, source_url):
@@ -39,7 +45,7 @@ class ParsingLeboncoinList(ParseResult):
         if not cls.url_match(source_url):
             return result
 
-        section_content = root_page.find('section', class_='tabsContent')
+        section_content = root_page.find(*data_signature['list_panel'])
         if not section_content:
             return result
 
@@ -50,11 +56,13 @@ class ParsingLeboncoinList(ParseResult):
         result.add_url(new_urls)
 
         # recurse on next pages by adding nexyt page to the one to process
-        pagination_div = root_page.find('div', class_='pagination_links_container')
-        if pagination_div:
-            next_button = pagination_div.find('a', {'id': 'next'})
-            if next_button:
-                result.add_url(nice_url(next_button['href']))
+        nav_bars = root_page.find_all('nav')
+        if nav_bars and len(nav_bars) == 2:
+            page_bar = nav_bars[-1]
+            for page_last in page_bar.find_all('li'): pass
+            next = page_last.a
+            if next and next['href']:
+                result.add_url(nice_url(next['href']))
 
         return result
 
