@@ -27,18 +27,19 @@ def grab(input_filpath, output_filepath, append=False):
 
     while parsed.urls:
         source_url = parsed.urls.pop()
+        logging.info(f'loading {source_url}')
         root_page = get_page_tree(source_url)
         parsed.update(ParserCollection.parse(root_page, source_url))
 
     # load previous csv id needed
     if append and os.path.exists(output_filepath):
         table = pd.read_csv(output_filepath, sep=CSV_SEP)
-        table = table.set_index('url')
+        table = table.set_index('id')
     else:
         table = pd.DataFrame(columns=ads.ads.SaleEstate.properties_required()
                                      + ads.ads.SaleEstate.properties_optional()
-                                     + ['url'])
-        table = table.set_index('url')
+                                     + ['id'])
+        table = table.set_index('id')
 
     # and the look for ads details
     logging.info('retreive ads info')

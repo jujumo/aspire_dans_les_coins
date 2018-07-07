@@ -5,7 +5,7 @@ class Offer(object):
     @staticmethod
     def properties_required():
         """ defines the list of optional attributes """
-        return []
+        return ['url']
 
     @staticmethod
     def properties_optional():
@@ -38,7 +38,8 @@ class Sale(Offer):
     def properties_optional():
         """ defines the list of optional attributes """
         return Offer.properties_optional() + [
-            'date_creation'
+            'date_creation',
+            'thumb'
         ]
 
 

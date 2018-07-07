@@ -22,6 +22,7 @@ data_signature = {
     'title': {'data-qa-id': "adview_title"},
     'price': {'data-qa-id': 'adview_price'},
     'date': {'data-qa-id': 'adview_date'},
+    'image': {'data-qa-id': 'slideshow_container'},
     'category': {'data-qa-id': 'criteria_item_real_estate_type'},
     'surface': {'data-qa-id': 'criteria_item_square'},
     'rooms': {'data-qa-id': 'criteria_item_rooms'},
@@ -132,6 +133,12 @@ class ParsingLeboncoinAdEstate(ParseResult):
 
         info = dict()
 
+        # create an ID
+        urlp = urlparse(source_url)
+        id = int(urlp.path.split('/')[-2].split('.')[0])
+
+        info['url'] = source_url
+
         # title
         title_tree = root_page.find('div', data_signature['title'])
         if not title_tree:
@@ -190,12 +197,17 @@ class ParsingLeboncoinAdEstate(ParseResult):
             rooms = rooms_tree.contents[0].contents[1].contents[0]
             info['rooms'] = int(rooms)
 
+        # images
+        images_tree = root_page.find('div', data_signature['image'])
+        if images_tree:
+            info['thumb'] = images_tree.find('img')['src']
+
         # real estate
         real_estate_tree = root_page.find('span', data_signature['real_estate'])
         if real_estate_tree:
             info['real_estate'] = real_estate_tree.contents[0]
 
         sale = SaleEstate(**info)
-        result.ads[source_url] = sale
+        result.ads[id] = sale
 
         return result
