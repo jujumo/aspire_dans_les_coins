@@ -23,11 +23,12 @@ data_signature = {
     'price': {'data-qa-id': 'adview_price'},
     'date': {'data-qa-id': 'adview_date'},
     'image': {'data-qa-id': 'slideshow_container'},
-    'category': {'data-qa-id': 'criteria_item_real_estate_type'},
+    'description': {'data-qa-id': 'adview_description_container'},
+    'real_estate_category': {'data-qa-id': 'criteria_item_real_estate_type'},
     'surface': {'data-qa-id': 'criteria_item_square'},
     'rooms': {'data-qa-id': 'criteria_item_rooms'},
     'location': {'data-qa-id': 'adview_location_informations'},
-    'real_estate': {'data-qa-id': 'storebox_title'},
+    'real_estate_agent': {'data-qa-id': 'storebox_title'},
 }
 
 
@@ -145,6 +146,12 @@ class ParsingLeboncoinAdEstate(ParseResult):
             return result
         info['title'] = title_tree.contents[0].contents[0].contents[0]
 
+        # description
+        description_tree = root_page.find('div', data_signature['description'])
+        if not description_tree:
+            return result
+        info['description'] = description_tree.contents[0].contents[0].contents[0]
+
         # date of grabbing (now)
         info['date_grabbed'] = datetime.now()
 
@@ -177,12 +184,12 @@ class ParsingLeboncoinAdEstate(ParseResult):
             info['zip'] = int(currated_location_fields[1])
 
         # category
-        category_tree = root_page.find('div', data_signature['category'])
+        category_tree = root_page.find('div', data_signature['real_estate_category'])
         if location_tree:
             category = category_tree.contents[0].contents[1].contents[0]
-            info['category'] = category.lower()
+            info['real_estate_category'] = category.lower()
         else:
-            info['category'] = 'estate'
+            info['real_estate_category'] = 'estate'
 
         # surface
         surface_tree = root_page.find('div', data_signature['surface'])
@@ -203,9 +210,9 @@ class ParsingLeboncoinAdEstate(ParseResult):
             info['thumb'] = images_tree.find('img')['src']
 
         # real estate
-        real_estate_tree = root_page.find('span', data_signature['real_estate'])
+        real_estate_tree = root_page.find('span', data_signature['real_estate_agent'])
         if real_estate_tree:
-            info['real_estate'] = real_estate_tree.contents[0]
+            info['real_estate_agent'] = real_estate_tree.contents[0]
 
         sale = SaleEstate(**info)
         result.ads[id] = sale

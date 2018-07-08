@@ -61,12 +61,12 @@ class TestParserLeboncoin(unittest.TestCase):
         self.assertEqual(fake_url, ad.url)
         self.assertEqual('01/06/2018', ad.date_creation)
         self.assertEqual(495000, ad.price)
-        self.assertEqual('maison', ad.category)
+        self.assertEqual('maison', ad.real_estate_category)
         self.assertEqual(149, ad.surface)
         self.assertEqual(7, ad.rooms)
         self.assertEqual('https://img7.leboncoin.fr/ad-image/35fd4cfa65487df94e7443f096d6b360f9660266.jpg', ad.thumb)
         self.assertEqual('Le Versoud', ad.location)
-        self.assertEqual('CHRISTIAN JOUTY IMMOBILIER', ad.real_estate)
+        self.assertEqual('CHRISTIAN JOUTY IMMOBILIER', ad.real_estate_agent)
 
 
 if __name__ == '__main__':
