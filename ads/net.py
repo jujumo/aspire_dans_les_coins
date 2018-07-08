@@ -16,7 +16,7 @@ def get_content_url(url):
     logging.debug('requesting {}'.format(url))
     response = urlopen(url)
     mybytes = response.read()
-    page_content = mybytes.decode("latin-1")
+    page_content = mybytes.decode("utf-8")
     response.close()
     return page_content
 
