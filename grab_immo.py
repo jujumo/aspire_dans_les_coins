@@ -14,6 +14,11 @@ def main():
         arg_parser.add_argument('-a', '--append', action='store_true', help='append into csv file if already exists')
         args = arg_parser.parse_args()
 
+        if args.verbose:
+            logging.getLogger().setLevel(logging.INFO)
+            if __debug__:
+                logging.getLogger().setLevel(logging.DEBUG)
+
         temp_filepath = "requests.txt"
         create(temp_filepath)
         grab(temp_filepath, args.output, args.append)
