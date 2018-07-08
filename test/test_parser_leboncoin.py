@@ -17,9 +17,9 @@ class TestParserLeboncoinList(unittest.TestCase):
         result = lbc.ParsingLeboncoinList.parse(root_page, fake_url)
         urls = sorted(result.urls)
 
-        self.assertEqual(19, len(urls))
+        self.assertEqual(17, len(urls))
         self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1321296674.htm/', urls[0])
-        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1455670832.htm/', urls[-1])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1459715477.htm/', urls[-1])
 
     def test_parse_page_list_pages(self):
         fake_url = 'https://www.leboncoin.fr/recherche/?category=9&region=22&cities=Grenoble_38000'
@@ -31,8 +31,8 @@ class TestParserLeboncoinList(unittest.TestCase):
 
         self.assertEqual(36, len(urls))
         self.assertEqual('https://www.leboncoin.fr/recherche/?category=9&region=22&cities=Grenoble_38000&page=2', urls[0])
-        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1130030581.htm/', urls[1])
-        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1457365725.htm/', urls[-1])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1169971633.htm/', urls[1])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1459720545.htm/', urls[-1])
 
     def test_parse_page_list_last(self):
         fake_url = 'https://www.leboncoin.fr/recherche/?category=9&region=22&cities=38190&page=8'
@@ -42,9 +42,9 @@ class TestParserLeboncoinList(unittest.TestCase):
         result = lbc.ParsingLeboncoinList.parse(root_page, fake_url)
         urls = sorted(result.urls)
 
-        self.assertEqual(25, len(urls))
-        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1071666198.htm/', urls[0])
-        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1433979227.htm/', urls[-1])
+        self.assertEqual(24, len(urls))
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1120473631.htm/', urls[0])
+        self.assertEqual('https://www.leboncoin.fr/ventes_immobilieres/1434440981.htm/', urls[-1])
 
 
 class TestParserLeboncoin(unittest.TestCase):
@@ -64,7 +64,7 @@ class TestParserLeboncoin(unittest.TestCase):
         self.assertEqual('maison', ad.real_estate_category)
         self.assertEqual(149, ad.surface)
         self.assertEqual(7, ad.rooms)
-        self.assertEqual('https://img7.leboncoin.fr/ad-image/35fd4cfa65487df94e7443f096d6b360f9660266.jpg', ad.thumb)
+        self.assertEqual('https://img7.leboncoin.fr/ad-image/b5b2e7e3ba3d3aa0cc4f807fa74e400ea8a8a14e.jpg', ad.thumb)
         self.assertEqual('Le Versoud', ad.location)
         self.assertEqual('CHRISTIAN JOUTY IMMOBILIER', ad.real_estate_agent)
 
