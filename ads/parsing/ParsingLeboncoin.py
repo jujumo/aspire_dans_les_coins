@@ -150,7 +150,10 @@ class ParsingLeboncoinAdEstate(ParseResult):
         description_tree = root_page.find('div', data_signature['description'])
         if not description_tree:
             return result
-        info['description'] = description_tree.contents[0].contents[0].contents[0]
+        description = description_tree.contents[0].contents[0].contents
+        description = [d for d in description if not str(d).startswith('<')]
+        description = ' / '.join(description)
+        info['description'] = description
 
         # date of grabbing (now)
         info['date_grabbed'] = datetime.now()

@@ -2,7 +2,7 @@ __author__ = 'jumo'
 
 import logging
 import argparse
-import ads.ads as ads
+import ads.io
 from ads.net import get_page_tree, is_url
 from ads.parsing.ParserCollection import ParserCollection, ParseResult
 import os.path
@@ -29,11 +29,11 @@ def grab(input_filpath, output_filepath, append=False):
         parsed.update(ParserCollection.parse(root_page, source_url))
 
     # load previous csv id needed
-    df = ads.to_pandas(parsed.ads)
+    df = ads.io.to_pandas(parsed.ads)
     if append and os.path.exists(output_filepath):
         old_df = ads.from_csv_to_pandas(output_filepath)
         df.update(old_df)
-    ads.from_pandas_to_csv(output_filepath, df)
+    ads.io.from_pandas_to_csv(output_filepath, df)
 
 
 def main_grab():

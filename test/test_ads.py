@@ -34,7 +34,7 @@ class TestIO(unittest.TestCase):
         ad_dict = {0: maison}
 
         df = to_pandas(ad_dict)
-        self.assertEqual((1, 12), df.shape)
+        self.assertEqual((1, 8), df.shape)
         row = df.iloc[0]
         for k, a in args.items():
             self.assertEqual(a, row[k])
@@ -54,7 +54,10 @@ class TestIO(unittest.TestCase):
 
         df = to_pandas(ad_dict)
         back = from_pandas(df)
-        print((back))
+        # back = back.iloc[0]
+        # for k in args:
+        #     self.assertEqual(args[k], back.__dict__[k])
+        # print((back))
 
 
 if __name__ == '__main__':
