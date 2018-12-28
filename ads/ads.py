@@ -1,5 +1,4 @@
 __author__ = 'jumo'
-import pandas as pd
 import logging
 
 

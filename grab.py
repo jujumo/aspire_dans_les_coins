@@ -39,7 +39,7 @@ def grab(input_filpath, output_filepath, append=False):
 def main_grab():
     try:
         arg_parser = argparse.ArgumentParser(description='Grab real estate ads and sav into a csv file.')
-        arg_parser.add_argument('-v', '--verbose', action='store_true', help='verbose message')
+        arg_parser.add_argument('-v', '--verbose', action='count', default=0, help='verbose message')
         arg_parser.add_argument('-i', '--input', required=True, help='input can be either a file or an url')
         arg_parser.add_argument('-o', '--output', default='', help='output')
         arg_parser.add_argument('-a', '--append', action='store_true', help='append into csv file if already exists')
@@ -47,14 +47,14 @@ def main_grab():
 
         if args.verbose:
             logging.getLogger().setLevel(logging.INFO)
-            if __debug__:
-                logging.getLogger().setLevel(logging.DEBUG)
+        if args.verbose > 1:
+            logging.getLogger().setLevel(logging.DEBUG)
 
         grab(args.input, args.output, args.append)
 
     except Exception as e:
         logging.critical(e)
-        if __debug__:
+        if args.verbose > 1:
             raise
 
 
