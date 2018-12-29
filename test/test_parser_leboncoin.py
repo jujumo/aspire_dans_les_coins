@@ -1,7 +1,7 @@
 import unittest
 import argparse, logging
 import ads.parsing.ParsingLeboncoin as lbc
-from ads.net import get_page_tree
+from ads.net import get_page_tree, write_content_file
 
 fake_samples = {
     'page_single':
@@ -20,12 +20,11 @@ fake_samples = {
 
 
 def build_samples():
-    from ads.net import get_content_url, persistent_driver
+    from ads.net import get_content_url
     for page in fake_samples.values():
-        logging.debug(f'creating sample file {page["filename"]}')
-        with open(page['filename'], 'w') as fout:
-            content = get_content_url(page['url'])
-            fout.write(content)
+        logging.info(f'creating sample file {page["filename"]}')
+        content = get_content_url(page['url'])
+        write_content_file(page['filename'], content)
 
 
 class TestParserLeboncoinList(unittest.TestCase):
