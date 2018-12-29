@@ -45,6 +45,12 @@ def get_content_file(filepath):
     return content
 
 
+def write_content_file(filepath, content):
+    logging.debug('opening {}'.format(filepath))
+    with open(filepath, 'w', encoding='utf-8') as html_file:
+        html_file.write(content)
+
+
 def get_content_auto(url):
     if is_url(url):
         return get_content_url(url)
