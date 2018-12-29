@@ -2,14 +2,29 @@ __author__ = 'jumo'
 
 import logging
 
-import urllib
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup as bs
 from os.path import exists
 
 # using selenium
 from selenium import webdriver
-persistent_driver = webdriver.Firefox()
+pd = None
+
+
+class Browser:
+    def __init__(self):
+        self.driver = webdriver.Firefox()
+
+    def __del__(self):
+        self.driver.close()
+
+    def get(self, url):
+        self.driver.get(url)
+        page_content = self.driver.page_source  # is already decoded
+        return page_content
+
+
+singleton_browser = Browser()
 
 
 def is_url(path):
@@ -17,16 +32,9 @@ def is_url(path):
     return bool(url.netloc)
 
 
-def get_content_url(url, driver=None):
+def get_content_url(url):
     logging.debug('requesting {}'.format(url))
-    # response = urlopen(req)
-    _driver = driver or webdriver.Firefox()
-    _driver.get(url)
-    page_content = _driver.page_source
-
-    if not driver:
-        _driver.close()
-
+    page_content = singleton_browser.get(url)
     return page_content
 
 
@@ -39,7 +47,7 @@ def get_content_file(filepath):
 
 def get_content_auto(url):
     if is_url(url):
-        return get_content_url(url, persistent_driver)
+        return get_content_url(url)
     elif exists(url):
         return get_content_file(url)
 
