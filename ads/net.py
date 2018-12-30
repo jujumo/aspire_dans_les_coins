@@ -13,12 +13,15 @@ pd = None
 
 class Browser:
     def __init__(self):
-        self.driver = webdriver.Firefox()
+        self.driver = None
 
     def __del__(self):
-        self.driver.close()
+        if self.driver:
+            self.driver.close()
 
     def get(self, url):
+        if not self.driver:
+            self.driver = webdriver.Firefox()
         self.driver.get(url)
         page_content = self.driver.page_source  # is already decoded
         return page_content
