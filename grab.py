@@ -28,12 +28,8 @@ def grab(input_filpath, output_filepath, append=False):
         root_page = get_page_tree(source_url)
         parsed.update(ParserCollection.parse(root_page, source_url))
 
-    # load previous csv id needed
-    df = ads.io.to_pandas(parsed.ads)
-    if append and os.path.exists(output_filepath):
-        old_df = ads.from_csv_to_pandas(output_filepath)
-        df.update(old_df)
-    ads.io.from_pandas_to_csv(output_filepath, df)
+    # TODO: load previous csv id needed
+    ads.io.to_csv(output_filepath, parsed.ads)
 
 
 def main_grab():
