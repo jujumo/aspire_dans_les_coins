@@ -17,6 +17,7 @@ def nice_url(_url):
 
 
 data_signature = {
+    'application': ['div', {'id': 'application'}],
     'list_panel': ['div', {'role': 'tabpanel'}],
     'list_next': ['div', {'role': 'tabpanel'}],
     'title': {'data-qa-id': "adview_title"},
@@ -47,19 +48,20 @@ class ParsingLeboncoinList(ParseResult):
         if not cls.url_match(source_url):
             return result
 
-        section_content = root_page.find(*data_signature['list_panel'])
+        section_content = root_page.find(*data_signature['application'])
         if not section_content:
             return result
 
         # list all ads in the page
-        links_tree = section_content.find_all('a')
-        new_urls = (l['href'] for l in links_tree)
+        links_tree = section_content.find_all('li', {'itemtype': 'http://schema.org/Offer'})
+        new_urls = (l.find('a') for l in links_tree)
+        new_urls = (l['href'] for l in new_urls)
         new_urls = list(map(nice_url, new_urls))
         result.add_url(new_urls)
 
-        # recurse on next pages by adding nexyt page to the one to process
+        # recurse on next pages by adding next page to the one to process
         nav_bars = root_page.find_all('nav')
-        if nav_bars and len(nav_bars) == 2:
+        if nav_bars and len(nav_bars) == 3:
             page_bar = nav_bars[-1]
             for page_last in page_bar.find_all('li'): pass
             next = page_last.a
@@ -67,53 +69,6 @@ class ParsingLeboncoinList(ParseResult):
                 result.add_url(nice_url(next['href']))
 
         return result
-
-# TODO:
-# class ParsingLeboncoinAd(ParseResult):
-#     @classmethod
-#     def url_match(cls, source_url):
-#         url = urlparse(source_url)
-#         is_leboncoin = bool(url.netloc == 'www.leboncoin.fr')
-#         is_digit = (splitext(url.path.split('/')[-1])[0]).isdigit()
-#         return False
-#         return is_leboncoin and is_digit
-#
-#     @classmethod
-#     def parse(cls, root_page, source_url):
-#         result = ParseResult()
-#         return result
-#         # need to fail fast
-#         if not cls.url_match(source_url):
-#             return result
-#
-#         info = {}
-#         # title
-#         title_tree = root_page.find('div', data_signature['title'])
-#         info['title'] = title_tree.contents[0].contents[0].contents[0]
-#
-#         # date of grabbing (now)
-#         info['date_grabbed'] = datetime.now()
-#
-#         # date creation
-#         date_tree = root_page.find('div', data_signature['date'])
-#         date = date_tree.contents[0]  # = '13/06/2018 à 17h01'
-#         info['date_creation'] = date.split()[0]
-#
-#         # price
-#         price_tree = root_page.find('div', data_signature['price'])
-#         price = (price_tree.contents[0].contents[0].contents[1])
-#         info['price'] = int(price.replace(" ", ""))
-#
-#         # localization
-#         location_tree = root_page.find('div', data_signature['location'])
-#         info['location'] = location_tree.contents[0].contents[1]
-#         # zip
-#         info['zip'] = int(location_tree.contents[0].contents[7])
-#
-#         # sale = SaleEstate(**info)
-#         # result.ads[source_url] = sale
-#
-#         return result
 
 
 class ParsingLeboncoinAdEstate(ParseResult):
